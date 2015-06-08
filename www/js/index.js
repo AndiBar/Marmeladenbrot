@@ -27,6 +27,16 @@ function initialize(){
 		document.getElementById("maxaaa").innerHTML = max_aaa;
 		document.getElementById("minaaa").innerHTML = min_aaa;
 
+	var button = document.getElementById("reset");
+	button.addEventListener("click", onButtonClicked);
+	
+	function onButtonClicked(){
+		min_aaa= 1000;
+		max_aaa = 0;
+		document.body.style.backgroundColor = "#E4E4E4";
+	}
+		
+		
 		if (window.DeviceMotionEvent != undefined) {
 			window.ondevicemotion = function(e) {
 				ax = event.accelerationIncludingGravity.x * 5;
@@ -55,7 +65,7 @@ function initialize(){
 					document.getElementById("minaaa").innerHTML = min_aaa;
 				}
 				
-				if (aaa<=0) {
+				if (aaa<=1) {
 				  min=true;
 				}
 
