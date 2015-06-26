@@ -33,7 +33,7 @@ function initialize(){
 	function onButtonClicked(){
 		min_aaa= 1000;
 		max_aaa = 0;
-		document.body.style.backgroundColor = "#E4E4E4";
+		document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 	}
 		
 		
@@ -78,7 +78,7 @@ function initialize(){
 				}
 
 				if (min==true && max==true) {
-				  document.body.style.backgroundColor = "#CD0000";
+				  document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 				  i=0;
 				  min=false;
 				  max=false;

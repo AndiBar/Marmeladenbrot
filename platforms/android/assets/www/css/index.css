@@ -24,7 +24,7 @@ body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
+    background-color:#000000;
     background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
@@ -38,6 +38,7 @@ body {
     background-attachment:fixed;
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
+	color:#ffffff;
     height:100%;
     margin:0px;
     padding:0px;
@@ -47,26 +48,31 @@ body {
 
 /* Portrait layout (default) */
 .app {
-    background:url(../img/brot.jpg) no-repeat center top; /* 170px x 200px */
+    background:url(../img/correct.jpg) no-repeat center top; /* 170px x 200px */
 	background-size: cover;
+	background-position:center;
     position:absolute;             /* position in the center of the screen */
-    left:50%;
-    top:50%;
-    height:50px;                   /* text area height */
-    width:225px;                   /* text area width */
-    text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
+	top:25%;
+	height:50%;							  /* text area height */
+    width:100%;                   /* text area width */
+    text-align:center;  /* offset vertical: half of image height and text area height */
                                    /* offset horizontal: half of text area width */
 }
 
 /* Landscape layout (with min-width) */
 @media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
     .app {
-        background-position:left center;
+		background:url(../img/correct.jpg) no-repeat center top; /* 170px x 200px */
 		background-size: cover;
-        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
-        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
+		position:absolute;             /* position in the center of the screen */
+		top:0%;
+		height:100%;                   /* text area height */
+		width:100%;                   /* text area width */
+		text-align:left;  /* offset vertical: half of image height and text area height */
+                                   /* offset horizontal: half of text area width */
+        background-position:left;
+		background-size: cover;
+         /* offset vertical: half of image height */
                                       /* offset horizontal: half of image width and text area width */
     }
 }
