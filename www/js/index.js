@@ -61,8 +61,13 @@ function initialize(){
 		acceleration_count = 0;
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
-		document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+		if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+			document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
+	    }else{
+			document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+	    }
 		run = true;
+		setSignReady(true);
 	}
 			
 	if (window.DeviceMotionEvent != undefined) {
@@ -157,7 +162,11 @@ function initialize(){
 				}
 
 				if (min==true && max==true) {
-				  document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+				  if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+						document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
+				  }else{
+						document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+				  }
 				  i=0;
 				  min=false;
 				  max=false;
@@ -167,6 +176,9 @@ function initialize(){
 				  height = acceleration * ((time/1000) * (time/1000));
 				  document.getElementById("time").innerHTML = time;
 				  document.getElementById("height").innerHTML = height;
+				  document.getElementById("acceleration").innerHTML = acceleration;
+				  setSignReady(false);
+				  
 				}
 				/*if (i>4) {
 				  i=0;
@@ -196,31 +208,43 @@ function initialize(){
 			sphere.style.left = x + "px";
 			
 		}, 25);
-	} 
+	}
+	var previousOrientation = window.orientation;
+	var checkOrientation = function(){
+		if(window.orientation !== previousOrientation){
+			previousOrientation = window.orientation;
+			if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+				if(!run){
+					document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+				}else{
+					document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+				}
+		    }else{
+			    if(!run){
+					document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
+				}else{
+					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
+				}
+		    }
+		}
+	};
+
+	window.addEventListener("orientationchange", checkOrientation, false);
+	
+	function setSignReady(ready) {
+		var parentElement = document.getElementById('deviceready');
+		var listeningElement = parentElement.querySelector('.smashed');
+		var receivedElement = parentElement.querySelector('.ready');
+
+		if(ready){
+			listeningElement.setAttribute('style', 'display:none;');
+			receivedElement.setAttribute('style', 'display:block;');
+		}else{
+			listeningElement.setAttribute('style', 'display:block;');
+			receivedElement.setAttribute('style', 'display:none;');
+		}
+	}
 }
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    /*bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }*/
+    
 

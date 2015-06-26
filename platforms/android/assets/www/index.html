@@ -27,32 +27,37 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>Marmeladenbrot</title>
     </head>
     <body>
         <div id="app" class="app">
-            <h1>Marmeladenbrot</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Brot ist bereit zu Fallen</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-		<ul>
-			<li>acceleration x: <span id="accelerationX"></span>g</li>
-			<li>acceleration y: <span id="accelerationY"></span>g</li>
-			<li>acceleration z: <span id="accelerationZ"></span>g</li>
-			<li>spins X: <span id="spinsX"></span></li>
-			<li>spins y: <span id="spinsY"></span></li>
-			<li>spins total: <span id="spinsAll"></span></li>
-			<!--<li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
-			<li>rotation beta: <span id="rotationBeta"></span>degree</li>
-			<li>rotation gamma: <span id="rotationGamma"></span>degree</li>-->
-			<li>max aaa: <span id="maxaaa"></span>g</li>
-			<li>min aaa: <span id="minaaa"></span>g</li>
-			<li>time: <span id="time"></span>ms</li>
-			<li>height: <span id="height"></span>m</li>
-			<br>
-		</ul>
-		<button id="reset"> Reset </button>
+			<div id="text" class="text">
+				<h1>Marmeladenbrot</h1>
+				<div id="deviceready" class="blink">
+					<p class="event smashed">auf zurücksetzen klicken</p>
+					<p class="event ready">Brot fallen lassen</p>
+				</div>
+			<ul>
+				<li>acceleration x: <span id="accelerationX"></span>g</li>
+				<li>acceleration y: <span id="accelerationY"></span>g</li>
+				<li>acceleration z: <span id="accelerationZ"></span>g</li>
+				<li>spins X: <span id="spinsX"></span></li>
+				<li>spins y: <span id="spinsY"></span></li>
+				<li>spins total: <span id="spinsAll"></span></li>
+				<!--<li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
+				<li>rotation beta: <span id="rotationBeta"></span>degree</li>
+				<li>rotation gamma: <span id="rotationGamma"></span>degree</li>-->
+				<li>max aaa: <span id="maxaaa"></span>g</li>
+				<li>min aaa: <span id="minaaa"></span>g</li>
+				<li>time: <span id="time"></span>ms</li>
+				<li>height: <span id="height"></span>m</li>
+				<li>acceleration: <span id="acceleration"></span>m/s²</li>
+				<br>
+			</ul>
+				<div id="reset" class="reset">
+					<button id="reset"> zurücksetzen </button>
+				</div>	
+			</div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>

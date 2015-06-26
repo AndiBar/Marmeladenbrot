@@ -42,20 +42,21 @@ body {
     height:100%;
     margin:0px;
     padding:0px;
-    text-transform:uppercase;
     width:100%;
 }
 
 /* Portrait layout (default) */
 .app {
-    background:url(../img/correct.jpg) no-repeat center top; /* 170px x 200px */
-	background-size: cover;
-	background-position:center;
+    background:url(../img/correct_portrait.jpg) no-repeat center top; /* 170px x 200px */
+	background-size: contain;
     position:absolute;             /* position in the center of the screen */
-	top:25%;
-	height:50%;							  /* text area height */
-    width:100%;                   /* text area width */
-    text-align:center;  /* offset vertical: half of image height and text area height */
+	height:100%;							  /* text area height */
+    width:100%;   
+	position: fixed;
+	top: 10%;
+    /* bring your own prefixes */
+	/* text area width */
+	/* offset vertical: half of image height and text area height */
                                    /* offset horizontal: half of text area width */
 }
 
@@ -63,18 +64,29 @@ body {
 @media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
     .app {
 		background:url(../img/correct.jpg) no-repeat center top; /* 170px x 200px */
-		background-size: cover;
-		position:absolute;             /* position in the center of the screen */
-		top:0%;
+		background-size: contain;
+		position:absolute; 
+		/* position in the center of the screen */
 		height:100%;                   /* text area height */
-		width:100%;                   /* text area width */
-		text-align:left;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
-        background-position:left;
-		background-size: cover;
+		width:100%;   
+		top: 0%/* text area width */
+		 
+		 /* offset vertical: half of image height and text area height */
+                                   /* offset horizontal: half of text area width */	
          /* offset vertical: half of image height */
                                       /* offset horizontal: half of image width and text area width */
     }
+}
+
+.text {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+    /* bring your own prefixes */
+	transform: translate(-50%, -50%);
+}
+.reset {
+	text-align:center;
 }
 
 h1 {
@@ -93,16 +105,17 @@ h1 {
     font-size:12px;
     margin:0px 30px;
     padding:2px 0px;
+	text-align:center;
 }
 
-.event.listening {
+.event.smashed {
     background-color:#333333;
-    display:block;
+    display:none
 }
 
-.event.received {
+.event.ready {
     background-color:#4B946A;
-    display:none;
+    display:block;
 }
 
 @keyframes fade {
