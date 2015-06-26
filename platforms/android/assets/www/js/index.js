@@ -17,7 +17,6 @@
  * under the License.
  */
 function initialize(){
-	window.screen.Orientation('landscape');
 	
         var bread = document.getElementById("sphere");
 		var min = false;
@@ -39,9 +38,6 @@ function initialize(){
 	var y_start = false;
 	var y_half_hit = false;
 	var y_count = 0;
-	var z_start = false;
-	var z_half_hit = false;
-	var z_count = 0;
 	
 	var spins_count = 0;
 	
@@ -51,9 +47,10 @@ function initialize(){
 		max_aaa = 0;
 		x_count = 0;
 		y_count = 0;
-		z_count = 0;
 		spinsAll = 0;
 		document.body.style.backgroundColor = "#E4E4E4";
+		document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+
 	}
 		
 		
@@ -71,9 +68,6 @@ function initialize(){
 				if(Math.round(e.accelerationIncludingGravity.y) == 0 && y_start == false){
 					y_start = true;
 				}
-				if(Math.round(e.accelerationIncludingGravity.z) == 0 && z_start == false){
-					z_start = true;
-				}
 				
 				if(Math.round(e.accelerationIncludingGravity.x) == 10 || Math.round(e.accelerationIncludingGravity.x) == -9)
 				{
@@ -82,10 +76,6 @@ function initialize(){
 				if(Math.round(e.accelerationIncludingGravity.y) == 10 || Math.round(e.accelerationIncludingGravity.y) == -9)
 				{
 					y_half_hit = true;
-				}
-				if(Math.round(e.accelerationIncludingGravity.z) == 10 || Math.round(e.accelerationIncludingGravity.z) == -9)
-				{
-					z_half_hit = true;
 				}
 
 				if(Math.round(e.accelerationIncludingGravity.x) == 0 && x_start == true && x_half_hit == true){
@@ -98,18 +88,12 @@ function initialize(){
 					y_half_hit = false;
 					y_count += 0.5;
 				}
-				if(Math.round(e.accelerationIncludingGravity.z) == 0 && z_start == true && z_half_hit == true){
-					z_start = false;
-					z_half_hit = false;
-					z_count += 0.5;
-				}
 				
-				spins_count = x_count + y_count + z_count;
+				spins_count = x_count + y_count
 				
 				
 				document.getElementById("spinsX").innerHTML = x_count;
 				document.getElementById("spinsY").innerHTML = y_count;
-				document.getElementById("spinsZ").innerHTML = z_count;
 				
 				document.getElementById("spinsAll").innerHTML = spins_count;
 				
@@ -153,7 +137,7 @@ function initialize(){
 				}
 
 				if (min==true && max==true) {
-				  document.body.style.backgroundColor = "#CD0000";
+				  document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 				  i=0;
 				  min=false;
 				  max=false;
