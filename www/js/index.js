@@ -17,6 +17,7 @@
  * under the License.
  */
 function initialize(){
+	screen.orientation.lock("landscape-primary");
 	
         var bread = document.getElementById("sphere");
 		var min = false;
@@ -31,11 +32,10 @@ function initialize(){
 	var button = document.getElementById("reset");
 	button.addEventListener("click", onButtonClicked);
 	
-	
-	var x_start = false;
+	var x_start = true;
 	var x_half_hit = false;
 	var x_count = 0;
-	var y_start = false;
+	var y_start = true;
 	var y_half_hit = false;
 	var y_count = 0;
 	
@@ -56,55 +56,20 @@ function initialize(){
 		
 		if (window.DeviceMotionEvent != undefined) {
 			window.ondevicemotion = function(e) {
-				
-				
-				/*
-				Berechnung der Anzahl der Umdrehungen
-				*/
-				
-				if(Math.round(e.accelerationIncludingGravity.x) == 0 && x_start == false){
-					x_start = true;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 0 && y_start == false){
-					y_start = true;
-				}
-				
-				if(Math.round(e.accelerationIncludingGravity.x) == 10 || Math.round(e.accelerationIncludingGravity.x) == -9)
-				{
-					x_half_hit = true;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 10 || Math.round(e.accelerationIncludingGravity.y) == -9)
-				{
-					y_half_hit = true;
-				}
 
-				if(Math.round(e.accelerationIncludingGravity.x) == 0 && x_start == true && x_half_hit == true){
-					x_start = false;
-					x_half_hit = false;
-					x_count += 0.5;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 0 && y_start == true && y_half_hit == true){
-					y_start = false;
-					y_half_hit = false;
-					y_count += 0.5;
-				}
-				
-				spins_count = x_count + y_count
-				
+					
+				spins_count = x_count + y_count;
 				
 				document.getElementById("spinsX").innerHTML = x_count;
 				document.getElementById("spinsY").innerHTML = y_count;
-				
 				document.getElementById("spinsAll").innerHTML = spins_count;
-				
-				
 				ax = event.accelerationIncludingGravity.x * 5;
 				ay = event.accelerationIncludingGravity.y * 5;
 				document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
 				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
 				
-				
+				y_count = event.acceleration.x;
 
 				/*if ( e.rotationRate ) {
 					document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
@@ -122,22 +87,50 @@ function initialize(){
 				if(aaa < min_aaa){
 					min_aaa = aaa;
 					document.getElementById("minaaa").innerHTML = min_aaa;
+					
 				}
+				
+
 				
 				if (aaa<=1) {
 				  min=true;
+				  					
 				}
 
 				if (min==true) {
 				  i++;
-				  
-				  if(aaa>=15) {
-					max=true;
-				  }
+					if(e.acceleration.x > 10)
+					{
+						x_max_hit = true;
+						if(x_min_hit ==  true){
+							spin_comp = true;
+						}
+					}
+					
+					if(e.acceleration.x > -9)
+					{
+						x_min_hit = true; 
+						if(x_max_hit == true){
+							spin_comp = true;
+						}
+					}
+					
+					if(spin_comp){
+						x_count++;
+						spin_comp = false;
+						x_max_hit = false;
+						x_min_hit = false;
+					}
+					
+					if(e.acceleration.x > y_count){
+						y_count = e.acceleration.x ;
+					}
+					
 				}
 
 				if (min==true && max==true) {
-				  document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+				
+					document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 				  i=0;
 				  min=false;
 				  max=false;
