@@ -23,6 +23,14 @@ function initialize(){
 		var i = 0;
 		var max_aaa = 0;
 		var min_aaa= 1000;
+		var start_time = 0;
+		var stop_time = 0;
+		var time = 0;
+		var acceleration = 0;
+		var acceleration_count = 0;
+		var height = 0;
+		var start = true;
+		var run = true;
 		
 		document.getElementById("maxaaa").innerHTML = max_aaa;
 		document.getElementById("minaaa").innerHTML = min_aaa;
@@ -33,19 +41,27 @@ function initialize(){
 	function onButtonClicked(){
 		min_aaa= 1000;
 		max_aaa = 0;
+		start_time = 0;
+		stop_time = 0;
+		time = 0;
+		height = 0;
+		acceleration = 0;
+		acceleration_count = 0;
+		document.getElementById("time").innerHTML = time;
+		document.getElementById("height").innerHTML = height;
 		document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+		run = true;
 	}
-		
-		
-		if (window.DeviceMotionEvent != undefined) {
-			window.ondevicemotion = function(e) {
+			
+	if (window.DeviceMotionEvent != undefined) {
+		window.ondevicemotion = function(e) {
+			if(run){
 				ax = event.accelerationIncludingGravity.x * 5;
 				ay = event.accelerationIncludingGravity.y * 5;
+				lay = event.acceleration.z * (-1);
 				document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
 				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
-				
-				
 
 				/*if ( e.rotationRate ) {
 					document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
@@ -53,8 +69,8 @@ function initialize(){
 					document.getElementById("rotationGamma").innerHTML = e.rotationRate.gamma;
 				}*/
 				var aaa = Math.round(Math.sqrt(Math.pow(e.accelerationIncludingGravity.x, 2)
-                                    +Math.pow(e.accelerationIncludingGravity.y, 2)
-                                    +Math.pow(e.accelerationIncludingGravity.z, 2)));
+									+Math.pow(e.accelerationIncludingGravity.y, 2)
+									+Math.pow(e.accelerationIncludingGravity.z, 2)));
 				
 				if(aaa > max_aaa){
 					max_aaa = aaa;
@@ -67,13 +83,22 @@ function initialize(){
 				
 				if (aaa<=1) {
 				  min=true;
+					if(start){
+					  var date = new Date();
+					  start_time = date.getTime();
+					  start = false;
+					}
 				}
 
 				if (min==true) {
 				  i++;
-				  
-				  if(aaa>=15) {
+				  acceleration += lay;
+				  acceleration_count++;
+				  if(aaa>=10) {
 					max=true;
+					var date = new Date();
+					stop_time = date.getTime();
+					run = false;
 				  }
 				}
 
@@ -82,36 +107,42 @@ function initialize(){
 				  i=0;
 				  min=false;
 				  max=false;
+				  start = true;
+				  time = stop_time - start_time;
+				  acceleration = acceleration / acceleration_count;
+				  height = acceleration * ((time/1000) * (time/1000));
+				  document.getElementById("time").innerHTML = time;
+				  document.getElementById("height").innerHTML = height;
 				}
 				/*if (i>4) {
 				  i=0;
 				  min=false;
 				  max=false;
 				}*/
-
 			}
+		}
 
-			setInterval( function() {
-				var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
-				if ( landscapeOrientation) {
-					vx = vx + ay;
-					vy = vy + ax;
-				} else {
-					vy = vy - ay;
-					vx = vx + ax;
-				}
-				vx = vx * 0.98;
-				vy = vy * 0.98;
-				y = parseInt(y + vy / 50);
-				x = parseInt(x + vx / 50);
-				
-				boundingBoxCheck();
-				
-				sphere.style.top = y + "px";
-				sphere.style.left = x + "px";
-				
-			}, 25);
-		} 
+		setInterval( function() {
+			var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
+			if ( landscapeOrientation) {
+				vx = vx + ay;
+				vy = vy + ax;
+			} else {
+				vy = vy - ay;
+				vx = vx + ax;
+			}
+			vx = vx * 0.98;
+			vy = vy * 0.98;
+			y = parseInt(y + vy / 50);
+			x = parseInt(x + vx / 50);
+			
+			boundingBoxCheck();
+			
+			sphere.style.top = y + "px";
+			sphere.style.left = x + "px";
+			
+		}, 25);
+	} 
 }
     // Bind Event Listeners
     //
