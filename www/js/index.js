@@ -17,7 +17,7 @@
  * under the License.
  */
 function initialize(){
-	
+
         var bread = document.getElementById("sphere");
 		var min = false;
 		var max = false;
@@ -32,25 +32,27 @@ function initialize(){
 		var height = 0;
 		var start = true;
 		var run = true;
-		
+		var alpha;
+		var beta;
+		var gamma;
+		var x_max_hit = false;
+		var x_min_hit = false;
+		var spin_comp = false;
+		var x_count = 0;
+		var y_count = 0;
+		var spins_count = 0;
 		document.getElementById("maxaaa").innerHTML = max_aaa;
 		document.getElementById("minaaa").innerHTML = min_aaa;
 
-	var button = document.getElementById("reset");
-	button.addEventListener("click", onButtonClicked);
+		var button = document.getElementById("reset");
+		button.addEventListener("click", onButtonClicked);
 	
-	
-	var x_start = false;
-	var x_half_hit = false;
-	var x_count = 0;
-	var y_start = false;
-	var y_half_hit = false;
-	var y_count = 0;
-	
-	var spins_count = 0;
+
 	
 	
 	function onButtonClicked(){
+		x_count = 0;
+		y_count = 0;
 		min_aaa= 1000;
 		max_aaa = 0;
 		start_time = 0;
@@ -69,58 +71,31 @@ function initialize(){
 		run = true;
 		setSignReady(true);
 	}
-			
+
+				
+		
 	if (window.DeviceMotionEvent != undefined) {
+		window.ondeviceorientation = function(event) {
+			alpha = Math.round(event.alpha);
+			beta = Math.round(event.beta);
+			gamma = Math.round(event.gamma);
+
+		}
+		
 		window.ondevicemotion = function(e) {
 			if(run){
-				x_count = 0;
-				y_count = 0;
-				spinsAll = 0;		
-				
-				/*
-				Berechnung der Anzahl der Umdrehungen
-				*/
-				
-				if(Math.round(e.accelerationIncludingGravity.x) == 0 && x_start == false){
-					x_start = true;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 0 && y_start == false){
-					y_start = true;
-				}
-				
-				if(Math.round(e.accelerationIncludingGravity.x) == 10 || Math.round(e.accelerationIncludingGravity.x) == -9)
-				{
-					x_half_hit = true;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 10 || Math.round(e.accelerationIncludingGravity.y) == -9)
-				{
-					y_half_hit = true;
-				}
 
-				if(Math.round(e.accelerationIncludingGravity.x) == 0 && x_start == true && x_half_hit == true){
-					x_start = false;
-					x_half_hit = false;
-					x_count += 0.5;
-				}
-				if(Math.round(e.accelerationIncludingGravity.y) == 0 && y_start == true && y_half_hit == true){
-					y_start = false;
-					y_half_hit = false;
-					y_count += 0.5;
-				}
-				
-				spins_count = x_count + y_count
-				
-				document.getElementById("spinsX").innerHTML = x_count;
-				document.getElementById("spinsY").innerHTML = y_count;
-				
-				document.getElementById("spinsAll").innerHTML = spins_count;
-				
 				ax = event.accelerationIncludingGravity.x * 5;
 				ay = event.accelerationIncludingGravity.y * 5;
 				lay = event.acceleration.z * (-1);
-				document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
+				document.getElementById("accelerationX").innerHTML = event.acceleration.x;
 				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
+				
+				document.getElementById("spinsX").innerHTML = x_count;
+				document.getElementById("spinsY").innerHTML = beta;
+				document.getElementById("spinsAll").innerHTML = gamma;
+		
 
 				/*if ( e.rotationRate ) {
 					document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
@@ -138,7 +113,10 @@ function initialize(){
 				if(aaa < min_aaa){
 					min_aaa = aaa;
 					document.getElementById("minaaa").innerHTML = min_aaa;
+					
 				}
+				
+
 				
 				if (aaa<=1) {
 				  min=true;
@@ -151,14 +129,37 @@ function initialize(){
 
 				if (min==true) {
 				  i++;
+					if(alpha <= 5){
+						x_min_hit = true;
+						if(x_max_hit){
+							spin_comp= true;
+						}
+					}
+					
+					if(alpha >= 355){
+						x_max_hit = true;
+						if(x_min_hit){
+							spin_comp = true;
+						}
+					}
+					
+					if(spin_comp){
+						x_count++;
+						x_max_hit = false;
+						x_min_hit = false;
+						spin_comp = false;
+					}
+					
 				  acceleration += lay;
 				  acceleration_count++;
+				  
 				  if(aaa>=10) {
 					max=true;
 					var date = new Date();
 					stop_time = date.getTime();
 					run = false;
 				  }
+
 				}
 
 				if (min==true && max==true) {
