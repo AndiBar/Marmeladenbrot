@@ -35,20 +35,22 @@ function initialize(){
 		var alpha;
 		var beta;
 		var gamma;
-		var x_max_hit = false;
-		var x_min_hit = false;
+		var y_max_hit = false;
+		var y_min_hit = false;
 		var spin_comp = false;
 		var x_count = 0;
 		var y_count = 0;
 		var spins_count = 0;
-		document.getElementById("maxaaa").innerHTML = max_aaa;
-		document.getElementById("minaaa").innerHTML = min_aaa;
+		//document.getElementById("maxaaa").innerHTML = max_aaa;
+		//document.getElementById("minaaa").innerHTML = min_aaa;
+		document.getElementById("time").innerHTML = time;
+		document.getElementById("height").innerHTML = height;
+		document.getElementById("spinsAll").innerHTML = spins_count;
+		document.getElementById("points").innerHTML = 0;
 
 		var button = document.getElementById("reset");
 		button.addEventListener("click", onButtonClicked);
-	
 
-	
 	
 	function onButtonClicked(){
 		x_count = 0;
@@ -68,6 +70,7 @@ function initialize(){
 	    }else{
 			document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 	    }
+		document.getElementById("points").innerHTML = 0;
 		run = true;
 		setSignReady(true);
 	}
@@ -88,13 +91,11 @@ function initialize(){
 				ax = event.accelerationIncludingGravity.x * 5;
 				ay = event.accelerationIncludingGravity.y * 5;
 				lay = event.acceleration.z * (-1);
-				document.getElementById("accelerationX").innerHTML = event.acceleration.x;
-				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
-				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
-				
-				document.getElementById("spinsX").innerHTML = x_count;
-				document.getElementById("spinsY").innerHTML = beta;
-				document.getElementById("spinsAll").innerHTML = gamma;
+				//document.getElementById("accelerationX").innerHTML = event.acceleration.x;
+				//document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
+				//document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
+				//document.getElementById("spinsX").innerHTML = x_count;
+				//document.getElementById("spinsY").innerHTML = y_count;
 		
 
 				/*if ( e.rotationRate ) {
@@ -108,11 +109,11 @@ function initialize(){
 				
 				if(aaa > max_aaa){
 					max_aaa = aaa;
-					document.getElementById("maxaaa").innerHTML = max_aaa;
+				//	document.getElementById("maxaaa").innerHTML = max_aaa;
 				}
 				if(aaa < min_aaa){
 					min_aaa = aaa;
-					document.getElementById("minaaa").innerHTML = min_aaa;
+				//	document.getElementById("minaaa").innerHTML = min_aaa;
 					
 				}
 				
@@ -129,24 +130,20 @@ function initialize(){
 
 				if (min==true) {
 				  i++;
-					if(alpha <= 5){
-						x_min_hit = true;
-						if(x_max_hit){
-							spin_comp= true;
-						}
+					if(gamma < 0){
+						y_min_hit = true;
 					}
-					
-					if(alpha >= 355){
-						x_max_hit = true;
-						if(x_min_hit){
-							spin_comp = true;
-						}
+					if(y_min_hit && (gamma > 0)){
+						y_max_hit = true;
+					}
+					if(y_min_hit && y_max_hit && gamma < 0){
+						spin_comp = true;
 					}
 					
 					if(spin_comp){
-						x_count++;
-						x_max_hit = false;
-						x_min_hit = false;
+						y_count++;
+						y_max_hit = false;
+						y_min_hit = false;
 						spin_comp = false;
 					}
 					
@@ -176,8 +173,10 @@ function initialize(){
 				  acceleration = acceleration / acceleration_count;
 				  height = acceleration * ((time/1000) * (time/1000));
 				  document.getElementById("time").innerHTML = time;
-				  document.getElementById("height").innerHTML = height;
+				  document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
 				  document.getElementById("acceleration").innerHTML = acceleration;
+				  document.getElementById("spinsAll").innerHTML = y_count;
+				  document.getElementById("points").innerHTML = y_count / (Math.round(height * 100) / 100);
 				  setSignReady(false);
 				  
 				}
