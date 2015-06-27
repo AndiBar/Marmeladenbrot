@@ -17,7 +17,7 @@
  * under the License.
  */
 function initialize(){
-
+		//window.screen.lockOrientation("landscape-primary");
         var bread = document.getElementById("sphere");
 		var min = false;
 		var max = false;
@@ -32,29 +32,54 @@ function initialize(){
 		var height = 0;
 		var start = true;
 		var run = true;
-		var alpha;
-		var beta;
-		var gamma;
-		var y_max_hit = false;
-		var y_min_hit = false;
-		var spin_comp = false;
-		var x_count = 0;
-		var y_count = 0;
+		var displayDown = false;
 		var spins_count = 0;
 		//document.getElementById("maxaaa").innerHTML = max_aaa;
 		//document.getElementById("minaaa").innerHTML = min_aaa;
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
-		document.getElementById("spinsAll").innerHTML = spins_count;
 		document.getElementById("points").innerHTML = 0;
+		document.getElementById("valid").innerHTML = getTry("valid");
+		document.getElementById("invalid").innerHTML = getTry("valid");
 
 		var button = document.getElementById("reset");
 		button.addEventListener("click", onButtonClicked);
 
+	function setSignReady(ready) {
+		var parentElement = document.getElementById('deviceready');
+		var showSmashed = parentElement.querySelector('.event.smashed');
+		var showDropBread = parentElement.querySelector('.event.ready');
+
+		if(ready){
+			showSmashed.setAttribute('style', 'display:none;');
+			showDropBread.setAttribute('style', 'display:block;');
+		}else{
+			showSmashed.setAttribute('style', 'display:block;');
+			showDropBread.setAttribute('style', 'display:none;');
+		}
+	}
 	
+ 	function getTry(tryType){
+		if(localStorage.getItem(tryType) == undefined){
+			localStorage.setItem(tryType,0);
+		}
+		if(typeof(Storage) != "undefined") {
+			return localStorage.getItem(tryType);
+		}
+	}
+	
+	
+	function setTry(tryType){
+		if(localStorage.getItem(tryType) == undefined){
+			localStorage.setItem(tryType,0);
+		}
+		if(typeof(Storage) != "undefined") {
+			var val = localStorage.getItem(tryType);
+			val++;
+			localStorage.setItem(tryType, val);
+		}
+	}	
 	function onButtonClicked(){
-		x_count = 0;
-		y_count = 0;
 		min_aaa= 1000;
 		max_aaa = 0;
 		start_time = 0;
@@ -66,10 +91,10 @@ function initialize(){
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
 		if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
-			document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
-	    }else{
-			document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
-	    }
+				document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
+		}else{
+				document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+		}
 		document.getElementById("points").innerHTML = 0;
 		run = true;
 		setSignReady(true);
@@ -78,12 +103,6 @@ function initialize(){
 				
 		
 	if (window.DeviceMotionEvent != undefined) {
-		window.ondeviceorientation = function(event) {
-			alpha = Math.round(event.alpha);
-			beta = Math.round(event.beta);
-			gamma = Math.round(event.gamma);
-
-		}
 		
 		window.ondevicemotion = function(e) {
 			if(run){
@@ -91,9 +110,11 @@ function initialize(){
 				ax = event.accelerationIncludingGravity.x * 5;
 				ay = event.accelerationIncludingGravity.y * 5;
 				lay = event.acceleration.z * (-1);
-				//document.getElementById("accelerationX").innerHTML = event.acceleration.x;
+				//document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
 				//document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				//document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
+				document.getElementById("valid").innerHTML = getTry("valid");
+				document.getElementById("invalid").innerHTML = getTry("invalid");
 				//document.getElementById("spinsX").innerHTML = x_count;
 				//document.getElementById("spinsY").innerHTML = y_count;
 		
@@ -130,28 +151,17 @@ function initialize(){
 
 				if (min==true) {
 				  i++;
-					if(gamma < 0){
-						y_min_hit = true;
-					}
-					if(y_min_hit && (gamma > 0)){
-						y_max_hit = true;
-					}
-					if(y_min_hit && y_max_hit && gamma < 0){
-						spin_comp = true;
-					}
-					
-					if(spin_comp){
-						y_count++;
-						y_max_hit = false;
-						y_min_hit = false;
-						spin_comp = false;
-					}
 					
 				  acceleration += lay;
 				  acceleration_count++;
 				  
 				  if(aaa>=10) {
 					max=true;
+					if(e.accelerationIncludingGravity.z < 0){
+						displayDown = true;
+					}else{
+						displayDown = false;
+					}
 					var date = new Date();
 					stop_time = date.getTime();
 					run = false;
@@ -160,25 +170,34 @@ function initialize(){
 				}
 
 				if (min==true && max==true) {
-				  if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
-						document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
-				  }else{
-						document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
-				  }
-				  i=0;
-				  min=false;
-				  max=false;
-				  start = true;
-				  time = stop_time - start_time;
-				  acceleration = acceleration / acceleration_count;
-				  height = acceleration * ((time/1000) * (time/1000));
-				  document.getElementById("time").innerHTML = time;
-				  document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
-				  document.getElementById("acceleration").innerHTML = acceleration;
-				  document.getElementById("spinsAll").innerHTML = y_count;
-				  document.getElementById("points").innerHTML = y_count / (Math.round(height * 100) / 100);
-				  setSignReady(false);
-				  
+					if(displayDown){
+						if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+							document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
+						}else{
+							document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+						}
+						setTry("valid");					
+						time = stop_time - start_time;
+						acceleration = acceleration / acceleration_count;
+						height = acceleration * ((time/1000) * (time/1000));
+						document.getElementById("time").innerHTML = time;
+						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
+						//document.getElementById("acceleration").innerHTML = acceleration;
+						document.getElementById("points").innerHTML = time * (Math.round(height * 100) / 100) + 1;
+						
+					}else{
+						document.getElementById("time").innerHTML = "ungültig";
+						document.getElementById("height").innerHTML = "ungültig";
+						//document.getElementById("acceleration").innerHTML = "ungültig";
+						document.getElementById("points").innerHTML = "ungültig";
+						setTry("invalid");
+						
+					}
+					i=0;
+					min=false;
+					max=false;
+					start = true;
+					setSignReady(false);
 				}
 				/*if (i>4) {
 				  i=0;
@@ -210,20 +229,17 @@ function initialize(){
 		}, 25);
 	}
 	var previousOrientation = window.orientation;
+	
 	var checkOrientation = function(){
 		if(window.orientation !== previousOrientation){
 			previousOrientation = window.orientation;
 			if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
-				if(!run){
-					document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
-				}else{
-					document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+				if(run){
+					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
 				}
 		    }else{
-			    if(!run){
-					document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
-				}else{
-					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
+			    if(run){				
+					document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 				}
 		    }
 		}
@@ -231,19 +247,7 @@ function initialize(){
 
 	window.addEventListener("orientationchange", checkOrientation, false);
 	
-	function setSignReady(ready) {
-		var parentElement = document.getElementById('deviceready');
-		var listeningElement = parentElement.querySelector('.smashed');
-		var receivedElement = parentElement.querySelector('.ready');
 
-		if(ready){
-			listeningElement.setAttribute('style', 'display:none;');
-			receivedElement.setAttribute('style', 'display:block;');
-		}else{
-			listeningElement.setAttribute('style', 'display:block;');
-			receivedElement.setAttribute('style', 'display:none;');
-		}
-	}
 }
 
     
