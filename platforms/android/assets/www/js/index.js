@@ -128,13 +128,13 @@ function initialize(){
 		// Bei Bewegung des Smartphones (Accelerometer)
 		window.ondevicemotion = function(e) {
 			if(run){			
-				/* Ausgabe zum debuggen
+				/* Ausgabe zum debuggen */
 				document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
 				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
-				document.getElementById("valid").innerHTML = getTry("valid");
-				document.getElementById("invalid").innerHTML = getTry("invalid");
-				*/
+				//document.getElementById("valid").innerHTML = getTry("valid");
+				//document.getElementById("invalid").innerHTML = getTry("invalid");
+				
 				
 		// Feststellung des Falls
 				ax = event.accelerationIncludingGravity.x * 5;
@@ -167,8 +167,10 @@ function initialize(){
 				if (min==true) {
 				  i++;
 					
-				  acceleration += lay;
-				  acceleration_count++;
+				  if(lay > 0){
+					acceleration += lay;
+					acceleration_count++;
+				  }
 				  
 				  if(aaa>=10) {
 					// Fall beendet
@@ -231,27 +233,7 @@ function initialize(){
 				}*/
 			}
 		}
-
-		setInterval( function() {
-			var landscapeOrientation = window.innerWidth/window.innerHeight > 1;
-			if ( landscapeOrientation) {
-				vx = vx + ay;
-				vy = vy + ax;
-			} else {
-				vy = vy - ay;
-				vx = vx + ax;
-			}
-			vx = vx * 0.98;
-			vy = vy * 0.98;
-			y = parseInt(y + vy / 50);
-			x = parseInt(x + vx / 50);
-			
-			boundingBoxCheck();
-			
-			sphere.style.top = y + "px";
-			sphere.style.left = x + "px";
-			
-		}, 25);
+ 
 	}
 	var previousOrientation = window.orientation;
 	
@@ -262,11 +244,18 @@ function initialize(){
 			previousOrientation = window.orientation;
 			if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
 				if(run){
-					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
-				}
-		    }else{
-			    if(run){				
 					document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
+				}else if(displayDown){
+					document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
+				}
+		    }else if(window.matchMedia("(orientation: landscape)").matches){
+			    if(run){				
+					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
+					document.getElementById("time").innerHTML = time;
+					document.getElementById("height").innerHTML = height;
+					document.getElementById("points").innerHTML = 0;
+				}else if(displayDown){
+					document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
 				}
 		    }
 		}
