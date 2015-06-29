@@ -43,6 +43,17 @@ function initialize(){
 		var run = true;
 		//Smartphone landet mit dem Display nach unten
 		var displayDown = false;
+		
+		var alpha;
+		var beta;
+		var gamma;
+		var y_max_hit = false;
+		var y_min_hit = false;
+		var y_min_hit2 = false;
+		var spin_comp = false;
+		var x_count = 0;
+		var y_count = 0;
+		var spins_count = 0;
 
 		//document.getElementById("maxaaa").innerHTML = max_aaa;
 		//document.getElementById("minaaa").innerHTML = min_aaa;
@@ -118,20 +129,35 @@ function initialize(){
 				document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 		}
 		document.getElementById("points").innerHTML = 0;
+		y_count = 0;
+		document.getElementById("rotations").innerHTML = y_count;
 		run = true;
+		start = true;
 		setSignReady(true);
 	}
 
 				
 		
 	if (window.DeviceMotionEvent != undefined) {
+		//Bei Orientierungsänderung (Gyroskop)
+		window.ondeviceorientation = function(event) {
+			alpha = Math.round(event.alpha);
+			beta = Math.round(event.beta);
+			gamma = Math.round(event.gamma);
+
+		}
+	
 		// Bei Bewegung des Smartphones (Accelerometer)
 		window.ondevicemotion = function(e) {
 			if(run){			
 				/* Ausgabe zum debuggen */
-				document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
-				document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
-				document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
+				//document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
+				//document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
+				//document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
+				document.getElementById("rotationAlpha").innerHTML = alpha;
+				document.getElementById("rotationBeta").innerHTML = beta;
+				document.getElementById("rotationGamma").innerHTML = gamma;
+				document.getElementById("rotations").innerHTML = y_count;
 				//document.getElementById("valid").innerHTML = getTry("valid");
 				//document.getElementById("invalid").innerHTML = getTry("invalid");
 				
@@ -152,19 +178,38 @@ function initialize(){
 				if(aaa < min_aaa){
 					min_aaa = aaa;					
 				}
-
-				if (aaa<=1) {
-					// Fall beginnt
-				  min=true;
-					if(start){
-						//Festellung der Zeit zur Fallzeit berechnung
-					  var date = new Date();
-					  start_time = date.getTime();
-					  start = false;
-					}
+				
+				if(gamma < 0){
+					y_min_hit = true;
+				}
+				if(y_min_hit && (gamma > 45)){
+					y_max_hit = true;
+				}
+				if(y_max_hit && gamma < 0){
+					y_min_hit2 = true;
+				}
+				if(y_min_hit && y_max_hit && y_min_hit2 && gamma > 45){
+					spin_comp = true;
+				}
+				
+				if(spin_comp){
+					y_count++;
+					y_max_hit = false;
+					y_min_hit = false;
+					y_min_hit2 = false;
+					spin_comp = false;
+					min = true;
 				}
 
+				//if (aaa<=1) {
+
 				if (min==true) {
+				  if(start){
+					//Festellung der Zeit zur Fallzeit berechnung
+					var date = new Date();
+					start_time = date.getTime();
+					start = false;
+				  }
 				  i++;
 					
 				  if(lay > 0){
@@ -172,16 +217,11 @@ function initialize(){
 					acceleration_count++;
 				  }
 				  
-				  if(aaa>=10) {
+				  if(aaa>=20) {
 					// Fall beendet
 					max=true;
 					
-					//Festellung welche Seite oben/ unten liegt
-					if(e.accelerationIncludingGravity.z < 0){
-						displayDown = true;
-					}else{
-						displayDown = false;
-					}
+
 					//Festellung der Zeit zur Fallzeit berechnung
 					var date = new Date();
 					stop_time = date.getTime();
@@ -192,7 +232,16 @@ function initialize(){
 		//Festellung des Falls beendet
 		
 				if (min==true && max==true) {
+					//Festellung welche Seite oben/ unten liegt
+					if(e.accelerationIncludingGravity.z < 0){
+						displayDown = true;
+					}else{
+						displayDown = false;
+					}					
 					//Gültiger Versuch:
+					time = stop_time - start_time;
+					acceleration = acceleration / acceleration_count;
+					height = (9.81 * ((time/1000) * (time/1000))) * 0.75;
 					if(displayDown){
 						//Setze Brotbild mit Marmeladenseite nach unten
 						if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
@@ -202,9 +251,6 @@ function initialize(){
 						}
 						//Setze Werte zur Anzeige
 						setTry("valid");					
-						time = stop_time - start_time;
-						acceleration = acceleration / acceleration_count;
-						height = acceleration * ((time/1000) * (time/1000));
 						document.getElementById("time").innerHTML = time;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
 						//document.getElementById("acceleration").innerHTML = acceleration;
@@ -212,8 +258,8 @@ function initialize(){
 					//Ungültiger Versuch:
 					}else{
 						// Zeige an das die Werte ungültig sind
-						document.getElementById("time").innerHTML = "ungültig";
-						document.getElementById("height").innerHTML = "ungültig";
+						document.getElementById("time").innerHTML = time;
+						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
 						//document.getElementById("acceleration").innerHTML = "ungültig";
 						document.getElementById("points").innerHTML = "ungültig";
 						setTry("invalid");
@@ -223,7 +269,6 @@ function initialize(){
 					i=0;
 					min=false;
 					max=false;
-					start = true;
 					setSignReady(false);
 				}
 				/*if (i>4) {

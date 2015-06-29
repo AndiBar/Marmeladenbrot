@@ -52,7 +52,6 @@ body {
     position:absolute;             /* position in the center of the screen */
 	height:100%;							  /* text area height */
     width:100%;   
-	position: fixed;
 	top: 10%;
     /* bring your own prefixes */
 	/* text area width */
