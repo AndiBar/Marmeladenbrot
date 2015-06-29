@@ -188,7 +188,7 @@ function initialize(){
 				if(y_max_hit && gamma < 0){
 					y_min_hit2 = true;
 				}
-				if(y_min_hit && y_max_hit && y_min_hit2 && gamma > 45){
+				if(y_min_hit && y_max_hit && y_min_hit2 && gamma > 0){
 					spin_comp = true;
 				}
 				
