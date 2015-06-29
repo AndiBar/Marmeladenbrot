@@ -21,13 +21,12 @@ function initialize(){
 		
 		//
         //var bread = document.getElementById("sphere");
-		
-		//Varibalen zur Feststellung des Fallens
-		var min = false;
-		var max = false;
 		var i = 0;
-		var max_aaa = 0;
-		var min_aaa= 1000;
+		var j = 0;
+		var last_aaa = 0;
+		//Varibalen zur Feststellung des Fallens
+		var falling = false;
+		var hit = false;
 		
 		//Variablen zur Berechnung der Falldauer
 		var start_time = 0;
@@ -43,25 +42,21 @@ function initialize(){
 		var run = true;
 		//Smartphone landet mit dem Display nach unten
 		var displayDown = false;
-		
 		var alpha;
 		var beta;
 		var gamma;
-		var y_max_hit = false;
-		var y_min_hit = false;
-		var y_min_hit2 = false;
-		var spin_comp = false;
-		var x_count = 0;
-		var y_count = 0;
+		var half_spin = false;
+		var quarter_spin = false;
+		var three_quarter_spin = false;
 		var spins_count = 0;
-
-		//document.getElementById("maxaaa").innerHTML = max_aaa;
-		//document.getElementById("minaaa").innerHTML = min_aaa;
+		var half_spin_counted = false;
+		var spinning = false;
 		
 		// Setzen der Startwerte zur Anzeige
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
 		document.getElementById("points").innerHTML = 0;
+		document.getElementById("highscore").innerHTML = getHighscore();
 		document.getElementById("valid").innerHTML = getTry("valid");
 		document.getElementById("invalid").innerHTML = getTry("invalid");
 
@@ -107,12 +102,30 @@ function initialize(){
 			val++;
 			localStorage.setItem(tryType, val);
 		}
-	}	
+	}
+	// Getter für Highscore
+	function getHighscore(){
+		if(localStorage.getItem("highscore") == undefined){
+			localStorage.setItem("highscore",0);
+		}
+		if(typeof(Storage) != "undefined") {
+			return localStorage.getItem("highscore");
+		}
+	}
+	
+	// Setter für Highscore
+	function setHighscore(highscore){
+		if(localStorage.getItem("highscore") == undefined){
+			localStorage.setItem("highscore",0);
+		}
+		if(typeof(Storage) != "undefined") {
+			var val = localStorage.getItem("highscore");
+			localStorage.setItem("highscore", highscore);
+		}
+	}
 	
 	// Eventlistener zum zurücksetzen der Werte nach Klick auf Button reset
 	function onButtonClicked(){
-		min_aaa= 1000;
-		max_aaa = 0;
 		start_time = 0;
 		stop_time = 0;
 		time = 0;
@@ -129,10 +142,15 @@ function initialize(){
 				document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 		}
 		document.getElementById("points").innerHTML = 0;
-		y_count = 0;
-		document.getElementById("rotations").innerHTML = y_count;
+		spins_count = 0;
+		document.getElementById("rotations").innerHTML = spins_count;
 		run = true;
 		start = true;
+		spinning = false;
+		falling = false;
+		hit = false;
+		i=0;
+		j=0;
 		setSignReady(true);
 	}
 
@@ -144,7 +162,6 @@ function initialize(){
 			alpha = Math.round(event.alpha);
 			beta = Math.round(event.beta);
 			gamma = Math.round(event.gamma);
-
 		}
 	
 		// Bei Bewegung des Smartphones (Accelerometer)
@@ -157,83 +174,61 @@ function initialize(){
 				document.getElementById("rotationAlpha").innerHTML = alpha;
 				document.getElementById("rotationBeta").innerHTML = beta;
 				document.getElementById("rotationGamma").innerHTML = gamma;
-				document.getElementById("rotations").innerHTML = y_count;
+				document.getElementById("rotations").innerHTML = spins_count;
 				//document.getElementById("valid").innerHTML = getTry("valid");
 				//document.getElementById("invalid").innerHTML = getTry("invalid");
 				
 				
 		// Feststellung des Falls
-				ax = event.accelerationIncludingGravity.x * 5;
-				ay = event.accelerationIncludingGravity.y * 5;
-				lay = event.acceleration.z * (-1);
-
 				var aaa = Math.round(Math.sqrt(Math.pow(e.accelerationIncludingGravity.x, 2)
 									+Math.pow(e.accelerationIncludingGravity.y, 2)
 									+Math.pow(e.accelerationIncludingGravity.z, 2)));
 				
-				if(aaa > max_aaa){
-					max_aaa = aaa;
-				
-				}
-				if(aaa < min_aaa){
-					min_aaa = aaa;					
-				}
-				
 				if(gamma < 0){
-					y_min_hit = true;
+					quarter_spin = true;
 				}
-				if(y_min_hit && (gamma > 45)){
-					y_max_hit = true;
+				if(quarter_spin && (gamma > 45)){
+					half_spin = true;
 				}
-				if(y_max_hit && gamma < 0){
-					y_min_hit2 = true;
+				if(half_spin && gamma < 0){
+					three_quarter_spin = true;
+					if(!half_spin_counted){
+						spins_count += 0.5;
+						half_spin_counted = true;
+					}
+					if(start){
+						//Festellung der Zeit zur Fallzeit berechnung
+						var date = new Date();
+						start_time = date.getTime();
+						start = false;
+					}
+					spinning = true;
 				}
-				if(y_min_hit && y_max_hit && y_min_hit2 && gamma > 45){
-					spin_comp = true;
+				if(quarter_spin && half_spin && three_quarter_spin && gamma > 0){
+					half_spin = false;
+					quarter_spin = false;
+					three_quarter_spin = false;
+					half_spin_counted = false;
+					spins_count += 0.5;
 				}
-				
-				if(spin_comp){
-					y_count++;
-					y_max_hit = false;
-					y_min_hit = false;
-					y_min_hit2 = false;
-					spin_comp = false;
-					min = true;
+				if (aaa <= 1 && spinning) {
+					falling = true;
 				}
-
-				//if (aaa<=1) {
-
-				if (min==true) {
-				  if(start){
-					//Festellung der Zeit zur Fallzeit berechnung
-					var date = new Date();
-					start_time = date.getTime();
-					start = false;
-				  }
-				  i++;
-					
-				  if(lay > 0){
-					acceleration += lay;
-					acceleration_count++;
-				  }
-				  
-				  if(aaa>=20) {
+				if(aaa > 1 && falling){
 					// Fall beendet
-					max=true;
-					
+					hit=true;
 
 					//Festellung der Zeit zur Fallzeit berechnung
 					var date = new Date();
 					stop_time = date.getTime();
 					run = false;
-				  }
-
 				}
-		//Festellung des Falls beendet
+
+				//Festellung des Falls beendet
 		
-				if (min==true && max==true) {
+				if (falling && hit || falling && j > 200) {
 					//Festellung welche Seite oben/ unten liegt
-					if(e.accelerationIncludingGravity.z < 0){
+					if(e.accelerationIncludingGravity.z < 0 || j > 200){
 						displayDown = true;
 					}else{
 						displayDown = false;
@@ -242,40 +237,42 @@ function initialize(){
 					time = stop_time - start_time;
 					acceleration = acceleration / acceleration_count;
 					height = (9.81 * ((time/1000) * (time/1000))) * 0.75;
-					if(displayDown){
+					if(!displayDown){
+						//Setze Werte zur Anzeige
+						setTry("invalid");					
+						document.getElementById("time").innerHTML = time;
+						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
+						//document.getElementById("acceleration").innerHTML = acceleration;
+						var score = Math.round((spins_count / height) * 100) / 100;
+						document.getElementById("points").innerHTML = score;
+						if(getHighscore() < score){
+							setHighscore(score);
+							document.getElementById("highscore").innerHTML = score;
+						}
+					//Ungültiger Versuch:
+					}else{
 						//Setze Brotbild mit Marmeladenseite nach unten
 						if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
 							document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
 						}else{
 							document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 						}
-						//Setze Werte zur Anzeige
-						setTry("valid");					
-						document.getElementById("time").innerHTML = time;
-						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
-						//document.getElementById("acceleration").innerHTML = acceleration;
-						document.getElementById("points").innerHTML = time * (Math.round(height * 100) / 100) + 1;
-					//Ungültiger Versuch:
-					}else{
 						// Zeige an das die Werte ungültig sind
 						document.getElementById("time").innerHTML = time;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
 						//document.getElementById("acceleration").innerHTML = "ungültig";
 						document.getElementById("points").innerHTML = "ungültig";
-						setTry("invalid");
+						setTry("valid");
 						
 					}
 					// Setze Variablen für einen festgestellten Fall zurück
 					i=0;
-					min=false;
-					max=false;
+					j=0;
+					falling=false;
+					hit=false;
+					spinning=false;
 					setSignReady(false);
 				}
-				/*if (i>4) {
-				  i=0;
-				  min=false;
-				  max=false;
-				}*/
 			}
 		}
  
