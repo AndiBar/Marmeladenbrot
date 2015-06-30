@@ -17,55 +17,50 @@
  * under the License.
  */
 function initialize(){
-		//window.screen.lockOrientation("landscape-primary");
-		
-		//
-        //var bread = document.getElementById("sphere");
-		var i = 0;
-		var j = 0;
-		var last_aaa = 0;
-		//Varibalen zur Feststellung des Fallens
-		var falling = false;
-		var hit = false;
-		
-		//Variablen zur Berechnung der Falldauer
-		var start_time = 0;
-		var stop_time = 0;
-		var time = 0;
-		
-		//Variablen zur Berechnung der Strecke
-		var acceleration = 0;
-		var acceleration_count = 0;
-		var height = 0;
-		var start = true;
-		// Fall abgeschlossen bzw nicht abgeschlossen
-		var run = true;
-		//Smartphone landet mit dem Display nach unten
-		var displayDown = false;
-		var alpha;
-		var beta;
-		var gamma;
-		var half_spin = false;
-		var quarter_spin = false;
-		var three_quarter_spin = false;
-		var spins_count = 0;
-		var half_spin_counted = false;
-		var spinning = false;
-		
-		// Setzen der Startwerte zur Anzeige
-		document.getElementById("time").innerHTML = time;
-		document.getElementById("height").innerHTML = height;
-		document.getElementById("points").innerHTML = 0;
-		document.getElementById("highscore").innerHTML = getHighscore();
-		document.getElementById("valid").innerHTML = getTry("valid");
-		document.getElementById("invalid").innerHTML = getTry("invalid");
 
-		// Button zum zurecksetzen der Werte nach Fall
-		var button = document.getElementById("reset");
-		button.addEventListener("click", onButtonClicked);
+	//Varibalen zur Feststellung des Fallens
+	var falling = false;
+	var hit = false;
+	var i = 0;
+	
+	//Variablen zur Berechnung der Falldauer
+	var start_time = 0;
+	var stop_time = 0;
+	var time = 0;
+	
+	//Variablen zur Berechnung der Strecke
+	var height = 0;
+	var start = true;
+	// Fall abgeschlossen bzw nicht abgeschlossen
+	var run = true;
+	//Smartphone landet mit dem Display nach unten
+	var displayDown = false;
+	
+	//Variablen zur Feststellung der Rotation
+	var alpha;
+	var beta;
+	var gamma;
+	var half_spin = false;
+	var quarter_spin = false;
+	var three_quarter_spin = false;
+	var spins_count = 0;
+	var half_spin_counted = false;
+	var spinning = false;
+	
+	// Setzen der Startwerte zur Anzeige
+	document.getElementById("time").innerHTML = time;
+	document.getElementById("height").innerHTML = height;
+	document.getElementById("points").innerHTML = 0;
+	document.getElementById("highscore").innerHTML = getHighscore();
+	document.getElementById("valid").innerHTML = getTry("valid");
+	document.getElementById("invalid").innerHTML = getTry("invalid");
+
+	// Button zum zurecksetzen der Werte nach Fall
+	var button = document.getElementById("reset");
+	button.addEventListener("click", onButtonClicked);
 
 		
-		// Blinkende Anzeige
+	// Blinkende Anzeige
 	function setSignReady(ready) {
 		var parentElement = document.getElementById('deviceready');
 		var showSmashed = parentElement.querySelector('.event.smashed');
@@ -126,17 +121,24 @@ function initialize(){
 	
 	// Eventlistener zum zurücksetzen der Werte nach Klick auf Button reset
 	function onButtonClicked(){
+		//Zurücksetzen der Variablen
+		run = true;
+		start = true;
+		spinning = false;
+		falling = false;
+		hit = false;
+		i=0;
+		setSignReady(true);
 		start_time = 0;
 		stop_time = 0;
 		time = 0;
 		height = 0;
-		acceleration = 0;
-		acceleration_count = 0;
+		//Zurücksetzen der Anzeige und des Hintergrundbildes
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
 		document.getElementById("valid").innerHTML = getTry("valid");
 		document.getElementById("invalid").innerHTML = getTry("invalid");
-		if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+		if (window.matchMedia("(orientation: portrait)").matches) {
 				document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
 		}else{
 				document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
@@ -144,14 +146,6 @@ function initialize(){
 		document.getElementById("points").innerHTML = 0;
 		spins_count = 0;
 		document.getElementById("rotations").innerHTML = spins_count;
-		run = true;
-		start = true;
-		spinning = false;
-		falling = false;
-		hit = false;
-		i=0;
-		j=0;
-		setSignReady(true);
 	}
 
 				
@@ -171,27 +165,29 @@ function initialize(){
 				//document.getElementById("accelerationX").innerHTML = e.accelerationIncludingGravity.x;
 				//document.getElementById("accelerationY").innerHTML = e.accelerationIncludingGravity.y;
 				//document.getElementById("accelerationZ").innerHTML = e.accelerationIncludingGravity.z;
-				document.getElementById("rotationAlpha").innerHTML = alpha;
-				document.getElementById("rotationBeta").innerHTML = beta;
-				document.getElementById("rotationGamma").innerHTML = gamma;
+				//document.getElementById("rotationAlpha").innerHTML = alpha;
+				//document.getElementById("rotationBeta").innerHTML = beta;
+				//document.getElementById("rotationGamma").innerHTML = gamma;
 				document.getElementById("rotations").innerHTML = spins_count;
 				//document.getElementById("valid").innerHTML = getTry("valid");
 				//document.getElementById("invalid").innerHTML = getTry("invalid");
 				
-				
-		// Feststellung des Falls
 				var aaa = Math.round(Math.sqrt(Math.pow(e.accelerationIncludingGravity.x, 2)
 									+Math.pow(e.accelerationIncludingGravity.y, 2)
 									+Math.pow(e.accelerationIncludingGravity.z, 2)));
 				
+				//Prüfen auf Viertelumdrehung
 				if(gamma < 0){
 					quarter_spin = true;
 				}
+				//Prüfen auf halbe Umdrehung
 				if(quarter_spin && (gamma > 45)){
 					half_spin = true;
 				}
+				//Prüfen auf Dreiviertelumdrehung
 				if(half_spin && gamma < 0){
 					three_quarter_spin = true;
+					//Hochzählen des Umdrehungs-Zählers (+0,5)
 					if(!half_spin_counted){
 						spins_count += 0.5;
 						half_spin_counted = true;
@@ -204,45 +200,48 @@ function initialize(){
 					}
 					spinning = true;
 				}
+				//Prüfen auf vollständige Umdrehung
 				if(quarter_spin && half_spin && three_quarter_spin && gamma > 0){
 					half_spin = false;
 					quarter_spin = false;
 					three_quarter_spin = false;
 					half_spin_counted = false;
+					//Hochzählen des Umdrehungs-Zählers (+0,5)
 					spins_count += 0.5;
 				}
-				if (aaa <= 1 && spinning) {
+				// Feststellung des Falls
+				if(aaa <= 1 && spinning) {
 					falling = true;
 				}
-				if(aaa > 1 && falling){
-					// Fall beendet
+				// Feststellung des Aufpralls
+				if(aaa > 15 && i == 0){
 					hit=true;
-
-					//Festellung der Zeit zur Fallzeit berechnung
+					//Festellung der Zeit zur Fallzeitberechnung
 					var date = new Date();
 					stop_time = date.getTime();
-					run = false;
 				}
-
-				//Festellung des Falls beendet
-		
-				if (falling && hit || falling && j > 200) {
+				
+				//Prüfen, ob sich das Gerät noch bewegt
+				if(falling && hit && Math.round(aaa) != 0){
+					i++;
+				}
+				
+				//Feststellung des Stillstands
+				if (falling && hit && i > 20) {
 					//Festellung welche Seite oben/ unten liegt
-					if(e.accelerationIncludingGravity.z < 0 || j > 200){
+					if(e.accelerationIncludingGravity.z < 0){
 						displayDown = true;
 					}else{
 						displayDown = false;
 					}					
 					//Gültiger Versuch:
 					time = stop_time - start_time;
-					acceleration = acceleration / acceleration_count;
 					height = (9.81 * ((time/1000) * (time/1000))) * 0.75;
 					if(!displayDown){
 						//Setze Werte zur Anzeige
 						setTry("invalid");					
 						document.getElementById("time").innerHTML = time;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
-						//document.getElementById("acceleration").innerHTML = acceleration;
 						var score = Math.round((spins_count / height) * 100) / 100;
 						document.getElementById("points").innerHTML = score;
 						if(getHighscore() < score){
@@ -252,7 +251,7 @@ function initialize(){
 					//Ungültiger Versuch:
 					}else{
 						//Setze Brotbild mit Marmeladenseite nach unten
-						if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
+						if (window.matchMedia("(orientation: portrait)").matches) {
 							document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
 						}else{
 							document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
@@ -260,17 +259,16 @@ function initialize(){
 						// Zeige an das die Werte ungültig sind
 						document.getElementById("time").innerHTML = time;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
-						//document.getElementById("acceleration").innerHTML = "ungültig";
 						document.getElementById("points").innerHTML = "ungültig";
 						setTry("valid");
 						
 					}
 					// Setze Variablen für einen festgestellten Fall zurück
 					i=0;
-					j=0;
 					falling=false;
 					hit=false;
 					spinning=false;
+					run = false;
 					setSignReady(false);
 				}
 			}
