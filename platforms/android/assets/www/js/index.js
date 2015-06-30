@@ -180,6 +180,15 @@ function initialize(){
 									+Math.pow(e.accelerationIncludingGravity.y, 2)
 									+Math.pow(e.accelerationIncludingGravity.z, 2)));
 				
+				//Prüfen auf freien Fall
+				if(start && aaa <= 1){
+					//Festellung der Zeit zur Fallzeit berechnung
+					var date = new Date();
+					start_time = date.getTime();
+					start = false;
+					document.getElementById("points").innerHTML = "GO!";
+				}
+				
 				//Prüfen auf Viertelumdrehung
 				if(gamma < 0){
 					quarter_spin = true;
@@ -215,8 +224,8 @@ function initialize(){
 					spins_count += 0.5;
 				}
 				
-				// Feststellung des Falls
-				if(aaa <= 1 && spinning) {
+				// Erneute Feststellung des Falls
+				if(aaa <= 1) {
 					falling = true;
 				}
 				// Feststellung des Aufpralls
