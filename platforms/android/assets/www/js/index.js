@@ -50,7 +50,7 @@ function initialize(){
 	// Setzen der Startwerte zur Anzeige
 	document.getElementById("time").innerHTML = time;
 	document.getElementById("height").innerHTML = height;
-	document.getElementById("points").innerHTML = 0;
+	document.getElementById("points").innerHTML = "Punkte: " + 0;
 	document.getElementById("highscore").innerHTML = getHighscore();
 	document.getElementById("valid").innerHTML = getTry("valid");
 	document.getElementById("invalid").innerHTML = getTry("invalid");
@@ -133,18 +133,22 @@ function initialize(){
 		stop_time = 0;
 		time = 0;
 		height = 0;
+		
+		spins_count = 0;
+		half_spin = false;
+		quarter_spin = false;
+		three_quarter_spin = false;
+		half_spin_counted = false;
+		
 		//Zurücksetzen der Anzeige und des Hintergrundbildes
 		document.getElementById("time").innerHTML = time;
 		document.getElementById("height").innerHTML = height;
-		document.getElementById("valid").innerHTML = getTry("valid");
-		document.getElementById("invalid").innerHTML = getTry("invalid");
 		if (window.matchMedia("(orientation: portrait)").matches) {
 				document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
 		}else{
 				document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 		}
-		document.getElementById("points").innerHTML = 0;
-		spins_count = 0;
+		document.getElementById("points").innerHTML = "Punkte: " + 0;
 		document.getElementById("rotations").innerHTML = spins_count;
 	}
 
@@ -169,8 +173,8 @@ function initialize(){
 				//document.getElementById("rotationBeta").innerHTML = beta;
 				//document.getElementById("rotationGamma").innerHTML = gamma;
 				document.getElementById("rotations").innerHTML = spins_count;
-				//document.getElementById("valid").innerHTML = getTry("valid");
-				//document.getElementById("invalid").innerHTML = getTry("invalid");
+				document.getElementById("valid").innerHTML = getTry("valid");
+				document.getElementById("invalid").innerHTML = getTry("invalid");
 				
 				var aaa = Math.round(Math.sqrt(Math.pow(e.accelerationIncludingGravity.x, 2)
 									+Math.pow(e.accelerationIncludingGravity.y, 2)
@@ -181,8 +185,16 @@ function initialize(){
 					quarter_spin = true;
 				}
 				//Prüfen auf halbe Umdrehung
-				if(quarter_spin && (gamma > 45)){
+				if(quarter_spin && gamma > 45){
 					half_spin = true;
+					if(start){
+						//Festellung der Zeit zur Fallzeit berechnung
+						var date = new Date();
+						start_time = date.getTime();
+						start = false;
+						document.getElementById("points").innerHTML = "GO!";
+					}
+					spinning = true;
 				}
 				//Prüfen auf Dreiviertelumdrehung
 				if(half_spin && gamma < 0){
@@ -192,13 +204,6 @@ function initialize(){
 						spins_count += 0.5;
 						half_spin_counted = true;
 					}
-					if(start){
-						//Festellung der Zeit zur Fallzeit berechnung
-						var date = new Date();
-						start_time = date.getTime();
-						start = false;
-					}
-					spinning = true;
 				}
 				//Prüfen auf vollständige Umdrehung
 				if(quarter_spin && half_spin && three_quarter_spin && gamma > 0){
@@ -209,6 +214,7 @@ function initialize(){
 					//Hochzählen des Umdrehungs-Zählers (+0,5)
 					spins_count += 0.5;
 				}
+				
 				// Feststellung des Falls
 				if(aaa <= 1 && spinning) {
 					falling = true;
@@ -238,16 +244,18 @@ function initialize(){
 					time = stop_time - start_time;
 					height = (9.81 * ((time/1000) * (time/1000))) * 0.75;
 					if(!displayDown){
-						//Setze Werte zur Anzeige
-						setTry("invalid");					
+						//Setze Werte zur Anzeige				
 						document.getElementById("time").innerHTML = time;
+						document.getElementById("rotations").innerHTML = spins_count;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
 						var score = Math.round((spins_count / height) * 100) / 100;
-						document.getElementById("points").innerHTML = score;
+						document.getElementById("points").innerHTML = "Punkte: " + score;
 						if(getHighscore() < score){
 							setHighscore(score);
 							document.getElementById("highscore").innerHTML = score;
 						}
+						setTry("valid");	
+						document.getElementById("valid").innerHTML = getTry("valid");
 					//Ungültiger Versuch:
 					}else{
 						//Setze Brotbild mit Marmeladenseite nach unten
@@ -256,11 +264,12 @@ function initialize(){
 						}else{
 							document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 						}
-						// Zeige an das die Werte ungültig sind
 						document.getElementById("time").innerHTML = time;
 						document.getElementById("height").innerHTML = Math.round(height * 100) / 100;
-						document.getElementById("points").innerHTML = "ungültig";
-						setTry("valid");
+						// Zeige an dass der Versuch ungültig ist
+						document.getElementById("points").innerHTML = "FAIL";
+						setTry("invalid");
+						document.getElementById("invalid").innerHTML = getTry("invalid");
 						
 					}
 					// Setze Variablen für einen festgestellten Fall zurück
@@ -283,13 +292,13 @@ function initialize(){
 		if(window.orientation !== previousOrientation){
 			previousOrientation = window.orientation;
 			if (window.matchMedia("(orientation: portrait)").matches) { // you're in PORTRAIT mode
-				if(run){
+				if(run || !displayDown){
 					document.getElementById("app").style.backgroundImage = 'url(img/correct.jpg)';
 				}else if(displayDown){
 					document.getElementById("app").style.backgroundImage = 'url(img/smashed.jpg)';
 				}
 		    }else if(window.matchMedia("(orientation: landscape)").matches){
-			    if(run){				
+			    if(run || !displayDown){				
 					document.getElementById("app").style.backgroundImage = 'url(img/correct_portrait.jpg)';
 				}else if(displayDown){
 					document.getElementById("app").style.backgroundImage = 'url(img/smashed_portrait.jpg)';
